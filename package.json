@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Template for the WebSocket remote control task",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "tsx ./src/wss/index.ts",
     "start:dev": "tsx watch ./src/wss/index.ts",
@@ -13,7 +12,7 @@
   "keywords": [],
   "license": "ISC",
   "dependencies": {
-    "ws": "^8.8.0"
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "@types/node": "^20.3.3",
