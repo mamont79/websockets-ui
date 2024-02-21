@@ -30,3 +30,22 @@ export const checkExistPlayer = (playersName: string) => {
     return false;
   });
 };
+
+export const checkPassword = (userPassword: string) => {
+  const isFound = playersData.some((element) => {
+    if (element.password === userPassword) return true;
+    return false;
+  });
+};
+
+export const getPlayerByName = (playerName: string) => {
+  return playersData.find((player) => player.name === playerName);
+};
+
+export const getPlayerById = (playerId: number) => {
+  return playersData.find((player) => player.id === playerId);
+};
+
+const getUserByConnection = (socket: WebSocket) => {
+  return playersData.find((player) => player.connection === socket);
+};
