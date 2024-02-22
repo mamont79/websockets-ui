@@ -1,13 +1,13 @@
 import WebSocket, { WebSocketServer } from 'ws';
 import { httpServer } from 'src/http_server';
 import { createId } from './utils/createId';
+import { addNewPlayer, checkExistPlayer, getPlayerByName, playersData } from 'src/db';
+import { notRegAnswer, regAnswer } from './answers/regAnswers';
 
-type IPlayerWS = {
+type IConnectionWS = {
   websocket: WebSocket;
-  name?: string;
-  opponentId?: string;
 };
-const players: Array<IPlayerWS> = [];
+const connections: Array<IConnectionWS> = [];
 
 const HTTP_PORT = 8181;
 console.log(`Start static http server on the http://localhost:${HTTP_PORT}/ port`);
@@ -17,7 +17,7 @@ const wss = new WebSocketServer({ port: 3000 });
 console.log("i'm here");
 wss.on('connection', (ws) => {
   const id = createId();
-  players[id] = { websocket: ws };
+  connections[id] = { websocket: ws };
 
   console.log(`Connections with id #${id} is established`);
 
@@ -26,16 +26,28 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('message', (data) => {
-    let usersData = JSON.parse(data.toString('utf8'));
-    let actionType = usersData.type;
+    let messageData = JSON.parse(data.toString('utf8'));
+    let actionType = messageData.type;
     console.log(actionType);
-    console.log(usersData);
     if (actionType === 'reg') {
-      ws.send(data.toString('utf8'));
+      const { name, password } = messageData.data;
+      const checkName = checkExistPlayer(name);
+      if (!checkName) {
+        addNewPlayer(ws, name, password);
+      }
+
+      const player = getPlayerByName(name);
+      if (password !== player?.password) {
+        const messageOut = notRegAnswer(player?.name!, player?.index!);
+        ws.send(JSON.stringify(messageData));
+      } else {
+        const messageOut = regAnswer(player?.name!, player?.index!);
+        ws.send(JSON.stringify(messageData));
+      }
     }
   });
 
   ws.on('close', () => {
-    delete players[id];
+    delete connections[id];
   });
 });

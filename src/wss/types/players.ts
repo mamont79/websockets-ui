@@ -10,15 +10,15 @@ export type IShip = {
 };
 
 export type IPlayer = {
-  connection: WebSocket;
-  id: number;
-  name: string;
-  password: string;
-  isAuth: boolean;
+  websocket: WebSocket;
+  index: number;
+  name?: string;
+  password?: string;
+  isAuth?: boolean;
 
-  wins: number;
-  gameId: number | null;
-  roomId: number | null;
+  wins?: number | null;
+  gameId?: number | null;
+  roomId?: number | null;
 };
 
 export type IRoom = {
@@ -31,4 +31,24 @@ export type IGame = {
   players: Array<IPlayer>;
   fields: Map<number, Array<IShip>>;
   currentPlayerIndex: number;
+};
+
+export type IRegDataIn = {
+  type: string;
+  data: {
+    name: string;
+    password: string;
+  };
+  id: number;
+};
+
+export type IRegDataOut = {
+  type: string;
+  data: {
+    name: string;
+    index: number;
+    error: boolean;
+    errorText: string | null;
+  };
+  id: number;
 };

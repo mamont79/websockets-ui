@@ -2,7 +2,7 @@ import { WebSocket } from 'ws';
 import { IPlayer, IRoom, IGame } from './wss/types/players';
 import { createId } from './wss/utils/createId';
 
-const playersData: Array<IPlayer> = [];
+export const playersData: Array<IPlayer> = [];
 const roomsData: Array<IRoom> = [];
 const gamesData: Array<IGame> = [];
 
@@ -11,8 +11,8 @@ export const addNewPlayer = (socket: WebSocket, name: string, password: string) 
 
   const newPlayer: IPlayer = {
     name: name,
-    connection: socket,
-    id: userId,
+    websocket: socket,
+    index: userId,
     password: password,
     wins: 0,
     gameId: null,
@@ -29,6 +29,7 @@ export const checkExistPlayer = (playersName: string) => {
     if (element.name === playersName) return true;
     return false;
   });
+  return isFound;
 };
 
 export const checkPassword = (userPassword: string) => {
@@ -36,6 +37,7 @@ export const checkPassword = (userPassword: string) => {
     if (element.password === userPassword) return true;
     return false;
   });
+  return isFound;
 };
 
 export const getPlayerByName = (playerName: string) => {
@@ -43,9 +45,9 @@ export const getPlayerByName = (playerName: string) => {
 };
 
 export const getPlayerById = (playerId: number) => {
-  return playersData.find((player) => player.id === playerId);
+  return playersData.find((player) => player.index === playerId);
 };
 
-const getUserByConnection = (socket: WebSocket) => {
-  return playersData.find((player) => player.connection === socket);
+export const getUserByConnection = (socket: WebSocket) => {
+  return playersData.find((player) => player.websocket === socket);
 };
