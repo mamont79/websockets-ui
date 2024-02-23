@@ -11,7 +11,7 @@ export const regAnswer = (userName: string, userIndex: number) => {
     },
     id: 0,
   };
-  return answer;
+  return JSON.stringify(answer.data);
 };
 
 export const notRegAnswer = (userName: string, userIndex: number) => {
@@ -25,5 +25,5 @@ export const notRegAnswer = (userName: string, userIndex: number) => {
     },
     id: 0,
   };
-  return answer;
+  return JSON.stringify(answer.data);
 };

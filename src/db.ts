@@ -3,14 +3,14 @@ import { IPlayer, IRoom, IGame } from './wss/types/players';
 import { createId } from './wss/utils/createId';
 
 export const playersData: Array<IPlayer> = [];
-const roomsData: Array<IRoom> = [];
+export const roomsData: Array<IRoom> = [];
 const gamesData: Array<IGame> = [];
 
 export const addNewPlayer = (socket: WebSocket, name: string, password: string) => {
   const userId = createId();
 
   const newPlayer: IPlayer = {
-    name: name,
+    name: name || '',
     websocket: socket,
     index: userId,
     password: password,
@@ -21,7 +21,7 @@ export const addNewPlayer = (socket: WebSocket, name: string, password: string) 
   };
   playersData.push(newPlayer);
 
-  return newPlayer;
+  // return newPlayer;
 };
 
 export const checkExistPlayer = (playersName: string) => {
@@ -50,4 +50,24 @@ export const getPlayerById = (playerId: number) => {
 
 export const getUserByConnection = (socket: WebSocket) => {
   return playersData.find((player) => player.websocket === socket);
+};
+
+export const createRoom = (roomId: number, name: string, index: number) => {
+  const newRoom: IRoom = {
+    roomId: roomId,
+    roomUsers: [
+      {
+        name: name,
+        index: index,
+      },
+    ],
+  };
+  roomsData.push(newRoom);
+
+  const answer = {
+    type: 'update_room',
+    data: JSON.stringify(newRoom),
+    id: 0,
+  };
+  return JSON.stringify(answer);
 };

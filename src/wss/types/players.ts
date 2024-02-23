@@ -10,9 +10,9 @@ export type IShip = {
 };
 
 export type IPlayer = {
-  websocket: WebSocket;
+  websocket?: WebSocket;
   index: number;
-  name?: string;
+  name: string;
   password?: string;
   isAuth?: boolean;
 
@@ -22,8 +22,8 @@ export type IPlayer = {
 };
 
 export type IRoom = {
-  id: number;
-  users: Array<IPlayer>;
+  roomId: number;
+  roomUsers: Array<IPlayer>;
 };
 
 export type IGame = {
