@@ -29,8 +29,8 @@ export type IRoom = {
 export type IGame = {
   id: number;
   players: Array<IPlayer>;
-  fields: Map<number, Array<IShip>>;
-  currentPlayerIndex: number;
+  fields?: Map<number, Array<IShip>>;
+  currentPlayerIndex?: number;
 };
 
 export type IRegDataIn = {

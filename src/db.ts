@@ -56,6 +56,14 @@ export const findRoomByUserID = (playerId: number) => {
   return roomsData.find((room) => room.roomUsers[0].index === playerId);
 };
 
+export const findGameByID = (gameId: number) => {
+  return gamesData.find((game) => game.id === gameId);
+};
+
+export const findRoomByRoomID = (roomId: number) => {
+  return roomsData.find((room) => room.roomId === roomId);
+};
+
 export const createRoom = (roomId: number, name: string, index: number) => {
   const check = findRoomByUserID(index);
   if (!check) {
@@ -70,6 +78,17 @@ export const createRoom = (roomId: number, name: string, index: number) => {
     };
     roomsData.push(newRoom);
   }
+};
+
+export const addUserToRoom = (roomId: number, name: string, index: number) => {
+  const currentRoom = findRoomByRoomID(roomId);
+
+  const newPlayer: IPlayer = {
+    name: name,
+    index: index,
+  };
+  currentRoom!.roomUsers.push(newPlayer);
+  console.log(roomsData);
 };
 
 export const roomsInfoMessage = () => {
@@ -97,6 +116,41 @@ export const updateWinners = () => {
     data: JSON.stringify(winnersInfo),
     id: 0,
   };
+
+  return JSON.stringify(answer);
+};
+
+export const addToGame = (gameId: number, playerId: number) => {
+  const check = findGameByID(gameId);
+  const playerToRoom = getPlayerById(playerId);
+
+  if (!check) {
+    const newGame = { id: gameId, players: [playerToRoom!] };
+    gamesData.push(newGame);
+  } else {
+    const currentGame = findGameByID(gameId);
+    currentGame?.players.push(playerToRoom!);
+  }
+
+  // id: number;
+  // players: Array<IPlayer>;
+  // fields?: Map<number, Array<IShip>>;
+  // currentPlayerIndex?: number;
+};
+
+export const createGame = (playerId: number) => {
+  const gameId = createId();
+
+  const answer = {
+    type: 'create_game',
+    data: JSON.stringify({
+      idGame: gameId,
+      idPlayer: playerId,
+    }),
+    id: 0,
+  };
+
+  addToGame(gameId, playerId);
 
   return JSON.stringify(answer);
 };

@@ -3,11 +3,14 @@ import { httpServer } from 'src/http_server';
 import { createId } from './utils/createId';
 import {
   addNewPlayer,
+  addUserToRoom,
   checkExistPlayer,
+  createGame,
   createRoom,
+  findRoomByRoomID,
+  getPlayerById,
   getPlayerByName,
   getUserByConnection,
-  playersData,
   roomsInfoMessage,
   updateWinners,
 } from 'src/db';
@@ -17,7 +20,6 @@ type IConnectionWS = {
   websocket: WebSocket;
 };
 const connections: Array<IConnectionWS> = [];
-const avaliableRooms: Array<number> = [];
 
 const HTTP_PORT = 8181;
 console.log(`Start static http server on the http://localhost:${HTTP_PORT}/ port`);
@@ -38,7 +40,6 @@ wss.on('connection', (ws) => {
   ws.on('message', (data) => {
     let messageData = JSON.parse(data.toString('utf8'));
     let actionType = messageData.type;
-    let playerId = id;
     let playerName: string = '';
 
     console.log(messageData);
@@ -65,14 +66,25 @@ wss.on('connection', (ws) => {
       }
     } else if (actionType === 'create_room') {
       const roomId = createId();
-      avaliableRooms.push(roomId);
-
       const playerData = getUserByConnection(connections[id].websocket);
       createRoom(roomId, playerData!.name, playerData!.index);
       const messageOut = roomsInfoMessage();
       console.log(messageOut);
       ws.send(messageOut);
     } else if (actionType === 'add_user_to_room') {
+      const messageIn = JSON.parse(messageData.data);
+      const playerData = getUserByConnection(connections[id].websocket);
+      addUserToRoom(messageIn.indexRoom, playerData!.name, playerData!.index);
+
+      const roomInfo = findRoomByRoomID(messageIn.indexRoom)!.roomUsers;
+
+      roomInfo.map((player) => {
+        const websocket = getPlayerById(player.index)?.websocket;
+        const messageOut = createGame(player.index);
+
+        websocket?.send(messageOut);
+      });
+
       ws.send('Hello');
     }
 
