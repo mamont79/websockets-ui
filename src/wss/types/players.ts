@@ -29,7 +29,7 @@ export type IRoom = {
 export type IGame = {
   id: number;
   players: Array<IPlayer>;
-  fields?: Map<number, Array<IShip>>;
+  fields?: Array<string | null>;
   currentPlayerIndex?: number;
 };
 

@@ -4,7 +4,7 @@ import { createId } from './wss/utils/createId';
 
 export const playersData: Array<IPlayer> = [];
 export const roomsData: Array<IRoom> = [];
-const gamesData: Array<IGame> = [];
+export const gamesData: Array<IGame> = [];
 
 export const addNewPlayer = (socket: WebSocket, name: string, password: string) => {
   const userId = createId();
@@ -83,12 +83,14 @@ export const createRoom = (roomId: number, name: string, index: number) => {
 export const addUserToRoom = (roomId: number, name: string, index: number) => {
   const currentRoom = findRoomByRoomID(roomId);
 
-  const newPlayer: IPlayer = {
-    name: name,
-    index: index,
-  };
-  currentRoom!.roomUsers.push(newPlayer);
-  console.log(roomsData);
+  if (currentRoom!.roomUsers[0].index !== index) {
+    const newPlayer: IPlayer = {
+      name: name,
+      index: index,
+    };
+    currentRoom!.roomUsers.push(newPlayer);
+    console.log(roomsData);
+  }
 };
 
 export const roomsInfoMessage = () => {
@@ -125,17 +127,12 @@ export const addToGame = (gameId: number, playerId: number) => {
   const playerToRoom = getPlayerById(playerId);
 
   if (!check) {
-    const newGame = { id: gameId, players: [playerToRoom!] };
+    const newGame = { id: gameId, players: [playerToRoom!], fields: [] };
     gamesData.push(newGame);
   } else {
     const currentGame = findGameByID(gameId);
     currentGame?.players.push(playerToRoom!);
   }
-
-  // id: number;
-  // players: Array<IPlayer>;
-  // fields?: Map<number, Array<IShip>>;
-  // currentPlayerIndex?: number;
 };
 
 export const createGame = (playerId: number) => {
@@ -153,4 +150,10 @@ export const createGame = (playerId: number) => {
   addToGame(gameId, playerId);
 
   return JSON.stringify(answer);
+};
+
+export const addShipps = (gameId: number, playerId: number, ships: string) => {
+  const game = findGameByID(gameId)!;
+
+  game.fields!.push(ships);
 };

@@ -3,10 +3,12 @@ import { httpServer } from 'src/http_server';
 import { createId } from './utils/createId';
 import {
   addNewPlayer,
+  addShipps,
   addUserToRoom,
   checkExistPlayer,
   createGame,
   createRoom,
+  findGameByID,
   findRoomByRoomID,
   getPlayerById,
   getPlayerByName,
@@ -78,14 +80,22 @@ wss.on('connection', (ws) => {
 
       const roomInfo = findRoomByRoomID(messageIn.indexRoom)!.roomUsers;
 
-      roomInfo.map((player) => {
-        const websocket = getPlayerById(player.index)?.websocket;
-        const messageOut = createGame(player.index);
+      if (roomInfo.length === 2) {
+        roomInfo.map((player) => {
+          const websocket = getPlayerById(player.index)?.websocket;
+          const messageOut = createGame(player.index);
 
-        websocket?.send(messageOut);
-      });
+          websocket?.send(messageOut);
+        });
+      }
+    } else if (actionType === 'add_ships') {
+      const messageIn = JSON.parse(messageData.data);
+      const gameData = findGameByID(messageIn.gameId)!;
+      addShipps(messageIn.gameId, messageIn.indexPlayer, JSON.stringify(messageIn.ships));
 
-      ws.send('Hello');
+      if (gameData.fields?.length === 2) {
+        console.log('messageOut');
+      }
     }
 
     for (let id in connections) {
