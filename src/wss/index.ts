@@ -9,6 +9,7 @@ import {
   getUserByConnection,
   playersData,
   roomsInfoMessage,
+  updateWinners,
 } from 'src/db';
 import { notRegAnswer, regAnswer } from './answers/regAnswers';
 
@@ -57,10 +58,9 @@ wss.on('connection', (ws) => {
         const messageOut = notRegAnswer(player!.name, id);
         ws.send(messageOut);
       } else {
-        const roomsInfo = roomsInfoMessage();
         const messageOut = regAnswer(player!.name, id);
         ws.send(messageOut);
-        ws.send(roomsInfo);
+
         console.log(messageOut);
       }
     } else if (actionType === 'create_room') {
@@ -74,6 +74,13 @@ wss.on('connection', (ws) => {
       ws.send(messageOut);
     } else if (actionType === 'add_user_to_room') {
       ws.send('Hello');
+    }
+
+    for (let id in connections) {
+      const roomsInfo = roomsInfoMessage();
+      const winInfo = updateWinners();
+      connections[id].websocket.send(roomsInfo);
+      connections[id].websocket.send(winInfo);
     }
   });
 

@@ -84,16 +84,19 @@ export const roomsInfoMessage = () => {
 };
 
 export const updateWinners = () => {
-  const winnersInfo = '';
+  const winnersInfo = playersData.map((player) => {
+    const winsInfo = {
+      name: player.name,
+      wins: player.wins,
+    };
+    return winsInfo;
+  });
 
   const answer = {
     type: 'update_winners',
-    data: [
-      {
-        name: '',
-        wins: 0,
-      },
-    ],
+    data: JSON.stringify(winnersInfo),
     id: 0,
   };
+
+  return JSON.stringify(answer);
 };
