@@ -8,6 +8,7 @@ import {
   getPlayerByName,
   getUserByConnection,
   playersData,
+  roomsInfoMessage,
 } from 'src/db';
 import { notRegAnswer, regAnswer } from './answers/regAnswers';
 
@@ -39,6 +40,8 @@ wss.on('connection', (ws) => {
     let playerId = id;
     let playerName: string = '';
 
+    console.log(messageData);
+
     if (actionType === 'reg') {
       const currentPlayerData = JSON.parse(messageData.data);
       const checkName = checkExistPlayer(currentPlayerData.name);
@@ -54,21 +57,23 @@ wss.on('connection', (ws) => {
         const messageOut = notRegAnswer(player!.name, id);
         ws.send(messageOut);
       } else {
+        const roomsInfo = roomsInfoMessage();
         const messageOut = regAnswer(player!.name, id);
-        ws.send(JSON.stringify(messageData));
-        console.log(JSON.stringify(messageData));
+        ws.send(messageOut);
+        ws.send(roomsInfo);
+        console.log(messageOut);
       }
-    } else if ((actionType = 'create_room')) {
-      const currentRoomData = messageData;
+    } else if (actionType === 'create_room') {
       const roomId = createId();
       avaliableRooms.push(roomId);
 
       const playerData = getUserByConnection(connections[id].websocket);
-
-      const messageOut = createRoom(roomId, playerData!.name, playerData!.index);
-
+      createRoom(roomId, playerData!.name, playerData!.index);
+      const messageOut = roomsInfoMessage();
       console.log(messageOut);
       ws.send(messageOut);
+    } else if (actionType === 'add_user_to_room') {
+      ws.send('Hello');
     }
   });
 

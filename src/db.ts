@@ -21,7 +21,7 @@ export const addNewPlayer = (socket: WebSocket, name: string, password: string) 
   };
   playersData.push(newPlayer);
 
-  // return newPlayer;
+  return newPlayer;
 };
 
 export const checkExistPlayer = (playersName: string) => {
@@ -52,22 +52,48 @@ export const getUserByConnection = (socket: WebSocket) => {
   return playersData.find((player) => player.websocket === socket);
 };
 
+export const findRoomByUserID = (playerId: number) => {
+  return roomsData.find((room) => room.roomUsers[0].index === playerId);
+};
+
 export const createRoom = (roomId: number, name: string, index: number) => {
-  const newRoom: IRoom = {
-    roomId: roomId,
-    roomUsers: [
-      {
-        name: name,
-        index: index,
-      },
-    ],
-  };
-  roomsData.push(newRoom);
+  const check = findRoomByUserID(index);
+  if (!check) {
+    const newRoom: IRoom = {
+      roomId: roomId,
+      roomUsers: [
+        {
+          name: name,
+          index: index,
+        },
+      ],
+    };
+    roomsData.push(newRoom);
+  }
+};
+
+export const roomsInfoMessage = () => {
+  const roomsInfo = roomsData.filter((room) => room.roomUsers.length < 2);
 
   const answer = {
     type: 'update_room',
-    data: JSON.stringify(newRoom),
+    data: JSON.stringify(roomsInfo),
     id: 0,
   };
   return JSON.stringify(answer);
+};
+
+export const updateWinners = () => {
+  const winnersInfo = '';
+
+  const answer = {
+    type: 'update_winners',
+    data: [
+      {
+        name: '',
+        wins: 0,
+      },
+    ],
+    id: 0,
+  };
 };
